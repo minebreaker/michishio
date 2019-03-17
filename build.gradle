@@ -1,0 +1,58 @@
+plugins {
+        id 'org.jetbrains.kotlin.jvm' version '1.3.21'
+    id 'antlr'
+}
+
+group 'rip.deadcode.michishio'
+version '0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven {
+        url = "https://dl.bintray.com/minebreaker/test"
+    }
+}
+
+dependencies {
+    antlr 'org.antlr:antlr4:4.7.2'
+    compile(
+            'org.jetbrains.kotlin:kotlin-stdlib-jdk8',
+
+            'org.ow2.asm:asm:7.1',
+
+            'com.google.guava:guava:27.0.1-jre',
+            'com.google.code.findbugs:jsr305:3.0.2',
+//            'com.google.code.gson:gson:2.8.5',
+//            'com.google.mug:mug:1.12',
+//            'com.typesafe:config:1.3.3',
+
+            'commons-cli:commons-cli:1.4',
+
+            'org.slf4j:slf4j-api:1.7.25',
+            'org.slf4j:jul-to-slf4j:1.7.25', // Guava uses java.util.logging
+            'ch.qos.logback:logback-classic:1.2.3'
+    )
+//    compileOnly 'org.projectlombok:lombok:1.16.20'
+    testCompile(
+            'org.junit.jupiter:junit-jupiter-api:5.4.0',
+            'com.google.truth:truth:0.43',
+            'com.google.truth.extensions:truth-java8-extension:0.43',
+            'org.mockito:mockito-core:2.25.0',
+            'rip.deadcode:izvestia:0.2',
+//            'com.google.jimfs:jimfs:1.1'
+    )
+    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.4.0'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+compileKotlin.dependsOn(generateGrammarSource)
