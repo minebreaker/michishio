@@ -91,18 +91,20 @@ private fun flagsToInt(keywords: List<String>): Int {
 private fun compileInheritance(classDec: Class_declarationContext): Pair<String, Array<String>> {
     val inheritance = classDec.inheritance()
     val extension = inheritance.java_type_name()?.text ?: "java/lang/Object"
-    val interfaces = inheritance.interfaces()?.java_type_name()?.map { it.text }?.toTypedArray() ?: arrayOf()  // TODO internal type
+    // FIXME use internal type
+    val interfaces = inheritance.interfaces()?.java_type_name()?.map { it.text }?.toTypedArray() ?: arrayOf()
     return extension to interfaces
 }
 
 private fun compileField(writer: ClassWriter, field: Field_declarationContext) {
 
+    val fieldAccFlag = compileFieldAccessFlag(field.field_access_flag())
     val fieldName = field.java_type_name().text
-    val descriptor = "L" + field.field_type().java_type_name().text + ";"  // TODO
+    val descriptor = "L" + field.field_type().java_type_name().text.replace('.', '/') + ";"  // TODO
 
     val value = field.constant_field_notation()?.STRING_LITERAL()?.text?.unquote()  // TODO
 
-    val vf = writer.visitField(0, fieldName, descriptor, null, value)
+    val vf = writer.visitField(fieldAccFlag, fieldName, descriptor, null, value)
 
     if (field.attribute_notation() != null) {
         field.attribute_notation().attribute().forEach {
@@ -125,6 +127,10 @@ private fun compileField(writer: ClassWriter, field: Field_declarationContext) {
     }
 }
 
+private fun compileFieldAccessFlag(nodes: List<Field_access_flagContext>): Int {
+    return flagsToInt(nodes.map { it.text })
+}
+
 private fun compileAttribute(attribute: AttributeContext) {
 
 }
@@ -137,6 +143,7 @@ private fun compileMethod(writer: ClassWriter, method: Method_declarationContext
     val (descriptor, signature) = compileMethodDescriptor(method.method_return_type(), method.method_arguments())
     val mv = writer.visitMethod(methodAccFlag, methodName, descriptor, signature, arrayOf())
 
+    // TODO
     mv.visitCode()
     mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;")
     mv.visitLdcInsn("hello, world")

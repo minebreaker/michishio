@@ -3,5 +3,7 @@ minor 0;
 
 public final super class HelloClass {
 
+    public static java.lang.String field;
+
     public static "([Ljava/lang/String;)V" main();
 }

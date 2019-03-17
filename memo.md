@@ -10,8 +10,10 @@ TODO
 * constants
 * attributes
     * code
-* exception
-
+* exception syntax
+* try-catch syntax
+* fluent error message
+* inner class
 
 ```
 major 52;
