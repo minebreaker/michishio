@@ -90,9 +90,10 @@ private fun flagsToInt(keywords: List<String>): Int {
 
 private fun compileInheritance(classDec: Class_declarationContext): Pair<String, Array<String>> {
     val inheritance = classDec.inheritance()
-    val extension = inheritance.java_type_name()?.text ?: "java/lang/Object"
-    // FIXME use internal type
-    val interfaces = inheritance.interfaces()?.java_type_name()?.map { it.text }?.toTypedArray() ?: arrayOf()
+    val extension = inheritance.java_type_name()?.text?.replace('.', '/') ?: "java/lang/Object"
+    val interfaces = inheritance.interfaces()?.java_type_name()
+        ?.map { it.text.replace('.', '/') }
+        ?.toTypedArray() ?: arrayOf()
     return extension to interfaces
 }
 

@@ -4,6 +4,8 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.jupiter.api.Test
 import java.io.ByteArrayInputStream
 import java.lang.reflect.Modifier
+import java.nio.ByteBuffer
+import java.util.*
 
 internal class CompilerKtTest {
 
@@ -11,17 +13,28 @@ internal class CompilerKtTest {
     fun testClass() {
 
         val source = """
-            major 50;
-            minor 0;
+            major 45;
+            minor 3;
 
-            public final super class test.TestClass {
-            }
+            public final super class test.TestClass
+                extends java.util.Date
+                implements java.lang.Runnable, java.lang.CharSequence {}
         """.trimIndent()
 
-        val cls = load(source, "test.TestClass")
+        val classfile = compile(ByteArrayInputStream(source.toByteArray()))
+        val cls = ByteClassLoader("test.TestClass", classfile).loadClass("")
+
         assertThat(cls.canonicalName).isEqualTo("test.TestClass")
         assertThat(Modifier.isPublic(cls.modifiers)).isTrue()
         assertThat(Modifier.isFinal(cls.modifiers)).isTrue()
+
+        assertThat(cls.superclass).isEqualTo(Date::class.java)
+        assertThat(cls.interfaces.asList()).containsExactly(Runnable::class.java, CharSequence::class.java)
+
+        val bb = ByteBuffer.wrap(classfile)
+        assertThat(bb.int).isEqualTo(-889275714)
+        assertThat(bb.short).isEqualTo(3)
+        assertThat(bb.short).isEqualTo(45)
     }
 
     @Test
@@ -41,8 +54,6 @@ internal class CompilerKtTest {
         """.trimIndent()
         /*
                 public static final "Ljava/lang/String;" field2;
-
-
          */
 
         val cls = load(source, "test.TestClass")
@@ -70,9 +81,9 @@ internal class CompilerKtTest {
         return ByteClassLoader(name, classfile).loadClass("")
     }
 
-    class ByteClassLoader(private val name: String, private val classfile: ByteArray) : ClassLoader() {
+    class ByteClassLoader(private val className: String, private val classfile: ByteArray) : ClassLoader() {
         override fun findClass(name: String?): Class<*> {
-            return defineClass(this.name, classfile, 0, classfile.size)
+            return defineClass(this.className, classfile, 0, classfile.size)
         }
     }
 }
