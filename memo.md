@@ -14,6 +14,7 @@ TODO
 * try-catch syntax
 * fluent error message
 * inner class
+* module
 
 ```
 major 52;
@@ -58,7 +59,7 @@ public final super sample.HelloClass {  // extends Object implements Interface
 
     // Methods
     
-    public static void main(String)
+    public static void main(String) {
 
     // Inline descriptor
     // public static "([Ljava/lang/String;)V" main() {

@@ -1,3 +1,7 @@
+// Java-related grammers are taken from ANTLR grammers repo, licensed under BSD
+// https://github.com/antlr/grammars-v4/blob/master/java8/Java8.g4
+
+
 grammar Michishio;
 
 @header {
@@ -13,10 +17,6 @@ grammar Michishio;
         this.addErrorListener(ErrorAccumulator.INSTANCE);
     }
 }
-
-WS
-    : (' ' | '\t' | '\r' | '\n') -> skip
-    ;
 
 // keywords
 PUBLIC : 'public' ;
@@ -41,13 +41,12 @@ VARARGS : 'varargs' ;
 NATIVE : 'native' ;
 STRICT : 'strict' ;
 
-INT : DIGIT+ ;
+NATURAL : DIGIT+ ;
 fragment DIGIT: [0-9] ;
 
 HEX : '0x' HEX_DIGIT+ ;
 fragment HEX_DIGIT: [0-9A-Fa-f] ;
 
-// https://github.com/antlr/grammars-v4/blob/master/java8/Java8.g4
 JAVA_IDENTIFIER
     : JAVA_LETTER JAVA_LETTER_OR_DIGIT*
     ;
@@ -80,7 +79,7 @@ file
     ;
 
 version
-    : 'major' INT ';' 'minor' INT ';'
+    : 'major' NATURAL ';' 'minor' NATURAL ';'
     ;
 
 import_declaration
@@ -88,7 +87,7 @@ import_declaration
     ;
 
 constant_declaration
-    : 'constant' ('(' INT ')')? '{' '}'  // TODO
+    : 'constant' ('(' NATURAL ')')? '{' '}'  // TODO
     ;
 
 java_type_name
@@ -151,7 +150,7 @@ attribute_notation
     ;
 
 constant_field_notation
-    : '=' STRING_LITERAL ';'
+    : '=' STRING_LITERAL ';'  // TODO
     ;
 
 fragment ESCAPE_SEQUENCE
@@ -230,4 +229,14 @@ general_attribute
     : STRING_LITERAL '=' STRING_LITERAL ';'  // TODO
     ;
 
+WS
+    : (' ' | '\t' | '\r' | '\n') -> skip
+    ;
 
+COMMENT
+    :   '/*' .*? '*/' -> skip
+    ;
+
+LINE_COMMENT
+    :   '//' ~[\r\n]* -> skip
+    ;

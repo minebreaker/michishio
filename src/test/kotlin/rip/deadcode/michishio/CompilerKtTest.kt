@@ -23,6 +23,11 @@ internal class CompilerKtTest {
             major 45;
             minor 3;
 
+            // Comment
+            /*
+             * Multi Line Comment
+             */
+
             public final super class test.TestClass
                 extends java.util.Date
                 implements java.lang.Runnable, java.lang.CharSequence {}
