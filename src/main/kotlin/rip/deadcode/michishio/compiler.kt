@@ -18,8 +18,16 @@ fun compile(input: InputStream): ByteArray {
     val lexer = MichishioLexer(stream)
     val tokens = BufferedTokenStream(lexer)
     val parser = MichishioParser(tokens)
-
     val source = parser.file()
+
+    if (ErrorAccumulator.errors.isNotEmpty()) {
+        val e = ErrorAccumulator.errors[0]
+        throw MichishioException(
+            getMessage("rip.deadcode.michishio.2").format(
+                e.offendingSymbol, "${e.line}:${e.charPositionInLine}", e.msg
+            )
+        )
+    }
 
     return compileFile(source)
 }

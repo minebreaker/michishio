@@ -2,7 +2,7 @@ grammar Michishio;
 
 @header {
     package rip.deadcode.michishio.generated;
-    import rip.deadcode.michishio.Slf4jErrorListener;
+    import rip.deadcode.michishio.ErrorAccumulator;
 }
 
 // 初期化子を使い、パーサー/レクサーのインスタンス作成時にリスナーをセットする。
@@ -10,7 +10,7 @@ grammar Michishio;
 @members {
     {
         this.removeErrorListeners();
-        this.addErrorListener(Slf4jErrorListener.INSTANCE);
+        this.addErrorListener(ErrorAccumulator.INSTANCE);
     }
 }
 

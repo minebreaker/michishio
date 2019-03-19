@@ -1,13 +1,20 @@
 package rip.deadcode.michishio
 
 import com.google.common.truth.Truth.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import rip.deadcode.izvestia.Core.expect
 import java.io.ByteArrayInputStream
 import java.lang.reflect.Modifier
 import java.nio.ByteBuffer
 import java.util.*
 
 internal class CompilerKtTest {
+
+    @BeforeEach
+    fun setUp() {
+        ErrorAccumulator.errors.clear()
+    }
 
     @Test
     fun testClass() {
@@ -74,6 +81,17 @@ internal class CompilerKtTest {
         assertThat(Modifier.isPublic(f4.modifiers)).isTrue()
         assertThat(Modifier.isStatic(f4.modifiers)).isTrue()
         assertThat(f4[null]).isEqualTo("test")
+    }
+
+    @Test
+    fun testError() {
+        expect {
+            val source = "unexpected token"
+            compile(ByteArrayInputStream(source.toByteArray()))
+
+        }.throwsException {
+            assertThat(it).isInstanceOf(MichishioException::class.java)
+        }
     }
 
     private fun load(code: String, name: String): Class<*> {
