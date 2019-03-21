@@ -37,8 +37,8 @@ private fun compileFile(source: MichishioParser.FileContext): ByteArray {
     val writer = ClassWriter(ClassWriter.COMPUTE_MAXS or ClassWriter.COMPUTE_FRAMES)
 
     val version = source.version()
-    val versionMajor = version.INT(0).text.toInt()
-    val versionMinor = version.INT(1).text.toInt()
+    val versionMajor = version.NATURAL(0).text.toInt()
+    val versionMinor = version.NATURAL(1).text.toInt()
     val versionInt = (versionMinor shl 16) or versionMajor
 
     val classDec = source.class_declaration()
