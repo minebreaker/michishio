@@ -1,6 +1,7 @@
 plugins {
-        id 'org.jetbrains.kotlin.jvm' version '1.3.21'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.21'
     id 'antlr'
+    id 'jacoco'
 }
 
 group 'rip.deadcode.michishio'
@@ -34,14 +35,14 @@ dependencies {
     )
 //    compileOnly 'org.projectlombok:lombok:1.16.20'
     testCompile(
-            'org.junit.jupiter:junit-jupiter-api:5.4.0',
+            'org.junit.jupiter:junit-jupiter-api:5.4.1',
             'com.google.truth:truth:0.43',
             'com.google.truth.extensions:truth-java8-extension:0.43',
-            'org.mockito:mockito-core:2.25.0',
-            'rip.deadcode:izvestia:0.2',
+            'org.mockito:mockito-core:2.25.1',
+            'rip.deadcode:izvestia:0.3',
 //            'com.google.jimfs:jimfs:1.1'
     )
-    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.4.0'
+    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.4.1'
 }
 
 test {
