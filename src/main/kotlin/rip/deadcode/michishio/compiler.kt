@@ -139,8 +139,8 @@ private fun compileFieldAttribute(writer: ClassWriter, fv: FieldVisitor, attribu
             val value = predefinedAttribute.constant_value_attribute().STRING_LITERAL().text.unquote()
             fv.visitAttribute(object : Attribute("ConstantValue") {
                 override fun write(
-                    classWriter: ClassWriter,
-                    code: ByteArray,
+                    classWriter: ClassWriter?,
+                    code: ByteArray?,
                     codeLength: Int,
                     maxStack: Int,
                     maxLocals: Int
@@ -157,8 +157,8 @@ private fun compileFieldAttribute(writer: ClassWriter, fv: FieldVisitor, attribu
         val value = generalAttribute.attribute_value()[0].STRING_LITERAL().text.unquote()  // TODO
         fv.visitAttribute(object : Attribute(attributeName) {
             override fun write(
-                classWriter: ClassWriter,
-                code: ByteArray,
+                classWriter: ClassWriter?,
+                code: ByteArray?,
                 codeLength: Int,
                 maxStack: Int,
                 maxLocals: Int
@@ -178,14 +178,11 @@ private fun compileMethod(writer: ClassWriter, method: Method_declarationContext
     val (descriptor, signature) = compileMethodDescriptor(method.method_return_type(), method.method_arguments())
     val mv = writer.visitMethod(methodAccFlag, methodName, descriptor, signature, arrayOf())
 
-    // TODO
-    mv.visitCode()
-    mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;")
-    mv.visitLdcInsn("hello, world")
-    mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false)
-    mv.visitInsn(Opcodes.RETURN)
-    mv.visitMaxs(0, 0)  // regardless of the value, the stack and the local are calculated.
-    mv.visitEnd()
+    if (method.attribute_notation() != null) {
+        method.attribute_notation().attribute().forEach {
+            compileMethodAttribute(writer, mv, it)
+        }
+    }
 }
 
 private fun compileMethodAccessFlag(nodes: List<Method_access_flagContext>): Int {
@@ -207,5 +204,39 @@ private fun compileMethodDescriptor(
         }
 
         return inlineDescriptor.text.unquote() to null
+    }
+}
+
+private fun compileMethodAttribute(writer: ClassWriter, mv: MethodVisitor, attribute: AttributeContext) {
+
+    val predefinedAttribute = attribute.predefined_attribute()
+    if (predefinedAttribute != null) {
+        if (predefinedAttribute.code_attribute() != null) {
+            TODO()
+//            mv.visitCode()
+//            mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;")
+//            mv.visitLdcInsn("hello, world")
+//            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false)
+//            mv.visitInsn(Opcodes.RETURN)
+//            mv.visitMaxs(0, 0)  // regardless of the value, the stack and the local are calculated.
+//            mv.visitEnd()
+        }
+    }
+    val generalAttribute = attribute.general_attribute()
+    if (generalAttribute != null) {
+        val attributeName = generalAttribute.STRING_LITERAL().text.unquote()
+        val value = generalAttribute.attribute_value()[0].STRING_LITERAL().text.unquote()  // TODO
+        mv.visitAttribute(object : Attribute(attributeName) {
+            override fun write(
+                classWriter: ClassWriter?,
+                code: ByteArray?,
+                codeLength: Int,
+                maxStack: Int,
+                maxLocals: Int
+            ): ByteVector {
+                val i = writer.newConst(value)
+                return ByteVector().putShort(i)
+            }
+        })
     }
 }
