@@ -2,6 +2,7 @@ package rip.deadcode.michishio
 
 import org.antlr.v4.runtime.BufferedTokenStream
 import org.antlr.v4.runtime.CharStreams
+import org.antlr.v4.runtime.Token
 import org.objectweb.asm.Attribute
 import org.objectweb.asm.ByteVector
 import org.objectweb.asm.ClassWriter
@@ -15,16 +16,23 @@ import java.io.InputStream
 fun compile(input: InputStream): ByteArray {
 
     val stream = CharStreams.fromStream(input)
-    val lexer = MichishioLexer(stream)
+    val errorAccumulator = ErrorAccumulator()
+    val lexer = MichishioLexer(stream).apply {
+        removeErrorListeners()
+        addErrorListener(errorAccumulator)
+    }
     val tokens = BufferedTokenStream(lexer)
-    val parser = MichishioParser(tokens)
+    val parser = MichishioParser(tokens).apply {
+        removeErrorListeners()
+        addErrorListener(errorAccumulator)
+    }
     val source = parser.file()
 
-    if (ErrorAccumulator.errors.isNotEmpty()) {
-        val e = ErrorAccumulator.errors[0]
+    if (errorAccumulator.errors.isNotEmpty()) {
+        val e = errorAccumulator.errors[0]
         throw MichishioException(
             getMessage("rip.deadcode.michishio.2").format(
-                e.offendingSymbol, "${e.line}:${e.charPositionInLine}", e.msg
+                (e.offendingSymbol as Token).text, "${e.line}:${e.charPositionInLine}", e.msg
             )
         )
     }

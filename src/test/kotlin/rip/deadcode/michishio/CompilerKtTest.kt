@@ -1,7 +1,6 @@
 package rip.deadcode.michishio
 
 import com.google.common.truth.Truth.assertThat
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import rip.deadcode.izvestia.Core.expect
 import java.io.ByteArrayInputStream
@@ -10,11 +9,6 @@ import java.nio.ByteBuffer
 import java.util.*
 
 internal class CompilerKtTest {
-
-    @BeforeEach
-    fun setUp() {
-        ErrorAccumulator.errors.clear()
-    }
 
     @Test
     fun testClass() {

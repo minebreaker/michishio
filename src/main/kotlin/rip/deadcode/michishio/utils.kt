@@ -4,6 +4,7 @@ import rip.deadcode.michishio.debug.assert
 import java.util.*
 
 
+// FIXME must handle escapes
 fun String.unquote(): String {
 
     assert { this.length > 2 }

@@ -6,16 +6,6 @@ grammar Michishio;
 
 @header {
     package rip.deadcode.michishio.generated;
-    import rip.deadcode.michishio.ErrorAccumulator;
-}
-
-// 初期化子を使い、パーサー/レクサーのインスタンス作成時にリスナーをセットする。
-// http://stackoverflow.com/questions/11194458/forcing-antlr-to-use-my-custom-treeadaptor-in-a-parser
-@members {
-    {
-        this.removeErrorListeners();
-        this.addErrorListener(ErrorAccumulator.INSTANCE);
-    }
 }
 
 // keywords
@@ -72,6 +62,11 @@ fragment STRING_CHARACTERS
 fragment STRING_CHARACTER
     : ~["\\\r\n]
     | ESCAPE_SEQUENCE
+    ;
+
+fragment ESCAPE_SEQUENCE
+    : '\\' [btnfr"'\\]
+    | '\\' 'u' HEX_DIGIT
     ;
 
 file
@@ -151,11 +146,6 @@ attribute_notation
 
 constant_field_notation
     : '=' STRING_LITERAL ';'  // TODO
-    ;
-
-fragment ESCAPE_SEQUENCE
-    : '\\' [btnfr"'\\]
-    | '\\' 'u' HEX_DIGIT
     ;
 
 method_declaration

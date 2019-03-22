@@ -4,7 +4,7 @@ import org.antlr.v4.runtime.BaseErrorListener
 import org.antlr.v4.runtime.RecognitionException
 import org.antlr.v4.runtime.Recognizer
 
-object ErrorAccumulator : BaseErrorListener() {
+class ErrorAccumulator : BaseErrorListener() {
 
     data class SyntaxErrorInfo(
         val offendingSymbol: Any,
