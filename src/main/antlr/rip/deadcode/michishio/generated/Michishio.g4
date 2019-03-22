@@ -216,7 +216,11 @@ argument
     ;
 
 general_attribute
-    : STRING_LITERAL '=' STRING_LITERAL ';'  // TODO
+    : STRING_LITERAL '=' attribute_value+ ';'
+    ;
+
+attribute_value
+    : STRING_LITERAL  // TODO
     ;
 
 WS

@@ -3,10 +3,7 @@ package rip.deadcode.michishio
 import org.antlr.v4.runtime.BufferedTokenStream
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.Token
-import org.objectweb.asm.Attribute
-import org.objectweb.asm.ByteVector
-import org.objectweb.asm.ClassWriter
-import org.objectweb.asm.Opcodes
+import org.objectweb.asm.*
 import rip.deadcode.michishio.generated.MichishioLexer
 import rip.deadcode.michishio.generated.MichishioParser
 import rip.deadcode.michishio.generated.MichishioParser.*
@@ -121,35 +118,56 @@ private fun compileField(writer: ClassWriter, field: Field_declarationContext) {
 
     val value = field.constant_field_notation()?.STRING_LITERAL()?.text?.unquote()  // TODO
 
-    val vf = writer.visitField(fieldAccFlag, fieldName, descriptor, null, value)
-
+    val fv = writer.visitField(fieldAccFlag, fieldName, descriptor, null, value)
     if (field.attribute_notation() != null) {
         field.attribute_notation().attribute().forEach {
-            val attrValue =
-                it.predefined_attribute().constant_value_attribute().STRING_LITERAL().text.unquote()
-            vf.visitAttribute(object : Attribute("ConstantValue") {
-                override fun write(
-                    classWriter: ClassWriter?,
-                    code: ByteArray?,
-                    codeLength: Int,
-                    maxStack: Int,
-                    maxLocals: Int
-                ): ByteVector {
-                    val i = writer.newConst(attrValue)
-                    return ByteVector().putShort(i)
-                }
-            })
-            vf.visitEnd()
+            compileFieldAttribute(writer, fv, it)
         }
     }
+    fv.visitEnd()
 }
 
 private fun compileFieldAccessFlag(nodes: List<Field_access_flagContext>): Int {
     return flagsToInt(nodes.map { it.text })
 }
 
-private fun compileAttribute(attribute: AttributeContext) {
+private fun compileFieldAttribute(writer: ClassWriter, fv: FieldVisitor, attribute: AttributeContext) {
 
+    val predefinedAttribute = attribute.predefined_attribute()
+    if (predefinedAttribute != null) {
+        if (predefinedAttribute.constant_value_attribute() != null) {
+            val value = predefinedAttribute.constant_value_attribute().STRING_LITERAL().text.unquote()
+            fv.visitAttribute(object : Attribute("ConstantValue") {
+                override fun write(
+                    classWriter: ClassWriter,
+                    code: ByteArray,
+                    codeLength: Int,
+                    maxStack: Int,
+                    maxLocals: Int
+                ): ByteVector {
+                    val i = writer.newConst(value)
+                    return ByteVector().putShort(i)
+                }
+            })
+        }
+    }
+    val generalAttribute = attribute.general_attribute()
+    if (generalAttribute != null) {
+        val attributeName = generalAttribute.STRING_LITERAL().text.unquote()
+        val value = generalAttribute.attribute_value()[0].STRING_LITERAL().text.unquote()  // TODO
+        fv.visitAttribute(object : Attribute(attributeName) {
+            override fun write(
+                classWriter: ClassWriter,
+                code: ByteArray,
+                codeLength: Int,
+                maxStack: Int,
+                maxLocals: Int
+            ): ByteVector {
+                val i = writer.newConst(value)
+                return ByteVector().putShort(i)
+            }
+        })
+    }
 }
 
 private fun compileMethod(writer: ClassWriter, method: Method_declarationContext) {
