@@ -153,20 +153,7 @@ private fun compileFieldAttribute(writer: ClassWriter, fv: FieldVisitor, attribu
     }
     val generalAttribute = attribute.general_attribute()
     if (generalAttribute != null) {
-        val attributeName = generalAttribute.STRING_LITERAL().text.decodeStringLiteral()
-        val value = generalAttribute.attribute_value()[0].STRING_LITERAL().text.decodeStringLiteral()  // TODO
-        fv.visitAttribute(object : Attribute(attributeName) {
-            override fun write(
-                classWriter: ClassWriter?,
-                code: ByteArray?,
-                codeLength: Int,
-                maxStack: Int,
-                maxLocals: Int
-            ): ByteVector {
-                val i = writer.newConst(value)
-                return ByteVector().putShort(i)
-            }
-        })
+        compileGeneralAttribute(generalAttribute, fv::visitAttribute, writer)
     }
 }
 
@@ -212,31 +199,70 @@ private fun compileMethodAttribute(writer: ClassWriter, mv: MethodVisitor, attri
     val predefinedAttribute = attribute.predefined_attribute()
     if (predefinedAttribute != null) {
         if (predefinedAttribute.code_attribute() != null) {
-            TODO()
-//            mv.visitCode()
-//            mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;")
-//            mv.visitLdcInsn("hello, world")
-//            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false)
-//            mv.visitInsn(Opcodes.RETURN)
-//            mv.visitMaxs(0, 0)  // regardless of the value, the stack and the local are calculated.
-//            mv.visitEnd()
+            val operations = predefinedAttribute.code_attribute().operation()
+            // TODO
+            mv.visitCode()
+            operations.forEach { op ->
+                when (op.instruction().text) {
+                    "getstatic" -> {
+                        mv.visitFieldInsn(
+                            Opcodes.GETSTATIC,
+                            op.argument(0).STRING_LITERAL().text.decodeStringLiteral(),
+                            op.argument(1).STRING_LITERAL().text.decodeStringLiteral(),
+                            op.argument(2).STRING_LITERAL().text.decodeStringLiteral()
+                        )
+                    }
+                    "ldc" -> {
+                        mv.visitLdcInsn(op.argument(0).STRING_LITERAL().text.decodeStringLiteral())
+                    }
+                    "invokevirtual" -> {
+                        mv.visitMethodInsn(
+                            Opcodes.INVOKEVIRTUAL,
+                            op.argument(0).STRING_LITERAL().text.decodeStringLiteral(),
+                            op.argument(1).STRING_LITERAL().text.decodeStringLiteral(),
+                            op.argument(2).STRING_LITERAL().text.decodeStringLiteral(),
+                            false
+                        )
+                    }
+                    "return" -> {
+                        mv.visitInsn(Opcodes.RETURN)
+                    }
+                    else -> {
+                        throw IllegalStateException("Unknown instruction: " + op.instruction().text)
+                    }
+                }
+
+
+            }
+
+            mv.visitMaxs(0, 0)  // regardless of the value, the stack and the local are calculated.
+            mv.visitEnd()
         }
     }
     val generalAttribute = attribute.general_attribute()
     if (generalAttribute != null) {
-        val attributeName = generalAttribute.STRING_LITERAL().text.decodeStringLiteral()
-        val value = generalAttribute.attribute_value()[0].STRING_LITERAL().text.decodeStringLiteral()  // TODO
-        mv.visitAttribute(object : Attribute(attributeName) {
-            override fun write(
-                classWriter: ClassWriter?,
-                code: ByteArray?,
-                codeLength: Int,
-                maxStack: Int,
-                maxLocals: Int
-            ): ByteVector {
-                val i = writer.newConst(value)
-                return ByteVector().putShort(i)
-            }
-        })
+        compileGeneralAttribute(generalAttribute, mv::visitAttribute, writer)
     }
+}
+
+fun compileGeneralAttribute(
+    generalAttribute: General_attributeContext,
+    visit: (Attribute) -> Unit,
+    writer: ClassWriter
+) {
+
+    val attributeName = generalAttribute.STRING_LITERAL().text.decodeStringLiteral()
+    val value = generalAttribute.attribute_value()[0].STRING_LITERAL().text.decodeStringLiteral()  // TODO
+    visit(object : Attribute(attributeName) {
+        override fun write(
+            classWriter: ClassWriter?,
+            code: ByteArray?,
+            codeLength: Int,
+            maxStack: Int,
+            maxLocals: Int
+        ): ByteVector {
+            val i = writer.newConst(value)
+            return ByteVector().putShort(i)
+        }
+    })
 }
