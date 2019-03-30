@@ -116,7 +116,7 @@ private fun compileField(writer: ClassWriter, field: Field_declarationContext) {
     val fieldName = field.java_type_name().text
     val descriptor = "L" + field.field_type().java_type_name().text.replace('.', '/') + ";"  // TODO
 
-    val value = field.constant_field_notation()?.STRING_LITERAL()?.text?.unquote()  // TODO
+    val value = field.constant_field_notation()?.STRING_LITERAL()?.text?.decodeStringLiteral()  // TODO
 
     val fv = writer.visitField(fieldAccFlag, fieldName, descriptor, null, value)
     if (field.attribute_notation() != null) {
@@ -136,7 +136,7 @@ private fun compileFieldAttribute(writer: ClassWriter, fv: FieldVisitor, attribu
     val predefinedAttribute = attribute.predefined_attribute()
     if (predefinedAttribute != null) {
         if (predefinedAttribute.constant_value_attribute() != null) {
-            val value = predefinedAttribute.constant_value_attribute().STRING_LITERAL().text.unquote()
+            val value = predefinedAttribute.constant_value_attribute().STRING_LITERAL().text.decodeStringLiteral()
             fv.visitAttribute(object : Attribute("ConstantValue") {
                 override fun write(
                     classWriter: ClassWriter?,
@@ -153,8 +153,8 @@ private fun compileFieldAttribute(writer: ClassWriter, fv: FieldVisitor, attribu
     }
     val generalAttribute = attribute.general_attribute()
     if (generalAttribute != null) {
-        val attributeName = generalAttribute.STRING_LITERAL().text.unquote()
-        val value = generalAttribute.attribute_value()[0].STRING_LITERAL().text.unquote()  // TODO
+        val attributeName = generalAttribute.STRING_LITERAL().text.decodeStringLiteral()
+        val value = generalAttribute.attribute_value()[0].STRING_LITERAL().text.decodeStringLiteral()  // TODO
         fv.visitAttribute(object : Attribute(attributeName) {
             override fun write(
                 classWriter: ClassWriter?,
@@ -203,7 +203,7 @@ private fun compileMethodDescriptor(
             throw RuntimeException("Inline descriptor with arguments.")
         }
 
-        return inlineDescriptor.text.unquote() to null
+        return inlineDescriptor.text.decodeStringLiteral() to null
     }
 }
 
@@ -224,8 +224,8 @@ private fun compileMethodAttribute(writer: ClassWriter, mv: MethodVisitor, attri
     }
     val generalAttribute = attribute.general_attribute()
     if (generalAttribute != null) {
-        val attributeName = generalAttribute.STRING_LITERAL().text.unquote()
-        val value = generalAttribute.attribute_value()[0].STRING_LITERAL().text.unquote()  // TODO
+        val attributeName = generalAttribute.STRING_LITERAL().text.decodeStringLiteral()
+        val value = generalAttribute.attribute_value()[0].STRING_LITERAL().text.decodeStringLiteral()  // TODO
         mv.visitAttribute(object : Attribute(attributeName) {
             override fun write(
                 classWriter: ClassWriter?,

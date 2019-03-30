@@ -15,6 +15,8 @@ TODO
 * fluent error message
 * inner class
 * module
+* ast
+    * python like syntax
 
 ```
 major 52;

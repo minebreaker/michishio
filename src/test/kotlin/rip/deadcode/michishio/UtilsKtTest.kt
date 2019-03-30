@@ -8,7 +8,7 @@ internal class UtilsKtTest {
     @Test
     fun testUnquote() {
 
-        val result = "\"foo\"".unquote()
-        assertThat(result).isEqualTo("foo")
+        val result = """"foo\b\t\n\f\r\"\'\\"""".decodeStringLiteral()
+        assertThat(result).isEqualTo("foo\b\t\n\u000c\r\"\'\\")
     }
 }
