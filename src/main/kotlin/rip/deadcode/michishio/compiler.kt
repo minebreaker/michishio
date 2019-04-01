@@ -114,7 +114,7 @@ private fun compileField(writer: ClassWriter, field: Field_declarationContext) {
 
     val fieldAccFlag = compileFieldAccessFlag(field.field_access_flag())
     val fieldName = field.java_type_name().text
-    val descriptor = "L" + field.field_type().java_type_name().text.replace('.', '/') + ";"  // TODO
+    val descriptor = compileFieldAccessFlag(field.field_type())
 
     val value = field.constant_field_notation()?.STRING_LITERAL()?.text?.decodeStringLiteral()  // TODO
 
@@ -129,6 +129,14 @@ private fun compileField(writer: ClassWriter, field: Field_declarationContext) {
 
 private fun compileFieldAccessFlag(nodes: List<Field_access_flagContext>): Int {
     return flagsToInt(nodes.map { it.text })
+}
+
+private fun compileFieldAccessFlag(fieldType: Field_typeContext): String {
+    return if (fieldType.STRING_LITERAL() != null) {
+        fieldType.STRING_LITERAL().text.decodeStringLiteral()
+    } else {
+        "L" + fieldType.java_type_name().text.replace('.', '/') + ";"  // TODO
+    }
 }
 
 private fun compileFieldAttribute(writer: ClassWriter, fv: FieldVisitor, attribute: AttributeContext) {

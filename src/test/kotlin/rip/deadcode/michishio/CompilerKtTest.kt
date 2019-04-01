@@ -52,22 +52,24 @@ internal class CompilerKtTest {
 
             public final super class test.TestClass {
                 public java.lang.String field1;
+                public static "Ljava/lang/String;" field2;
                 public static java.lang.String field3 = "test";
                 public static java.lang.String field4 {
                     ConstantValue = "test";
                 }
             }
         """.trimIndent()
-        /*
-                public static final "Ljava/lang/String;" field2;
-         */
 
         val cls = load(source, "test.TestClass")
-        assertThat(cls.declaredFields.size).isEqualTo(3)
+        assertThat(cls.declaredFields.size).isEqualTo(4)
 
         val f1 = cls.getDeclaredField("field1")
         assertThat(f1.type).isEqualTo(String::class.java)
         assertThat(Modifier.isPublic(f1.modifiers)).isTrue()
+
+        val f2 = cls.getDeclaredField("field2")
+        assertThat(f2.type).isEqualTo(String::class.java)
+        assertThat(Modifier.isPublic(f2.modifiers)).isTrue()
 
         val f3 = cls.getDeclaredField("field3")
         assertThat(f3.type).isEqualTo(String::class.java)

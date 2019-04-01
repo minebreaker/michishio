@@ -5,8 +5,10 @@ Programming language for writing Java byte code
 
 TODO
 
-* signature syntax
+* non string constant
+* use asm `Type` utility for descriptors
 * import resolution
+* signature syntax
 * constants
 * attributes
     * code
@@ -15,7 +17,7 @@ TODO
 * fluent error message
 * inner class
 * module
-* ast
+* introduce ast
     * python like syntax
 
 ```
