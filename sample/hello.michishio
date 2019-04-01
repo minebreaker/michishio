@@ -3,12 +3,13 @@ minor 0;
 
 public final super class HelloClass {
 
-    public static java.lang.String field;
+    public static java.lang.String field = "hello, world!";
 
     public static "([Ljava/lang/String;)V" main() {
         Code {
             getstatic "java/lang/System" "out" "Ljava/io/PrintStream;";
-            ldc "hello, world";
+//            ldc "hello, world"
+            getstatic "HelloClass" "field" "Ljava/lang/String;";
             invokevirtual "java/io/PrintStream" "println" "(Ljava/lang/String;)V";
             return;
         }
