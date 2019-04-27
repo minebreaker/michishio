@@ -8,6 +8,11 @@ fun resolveToInternalName(typeName: String, imports: List<String>): String {
     return toInternalType(cls)
 }
 
+fun resolveToDescriptor(typeName: String, imports: List<String>): String {
+    val cls = resolve(typeName, imports) ?: throw MichishioException("rip.deadcode.michishio.3", typeName)
+    return toDescriptor(cls)
+}
+
 fun resolve(typeName: String, imports: List<String>): Class<*>? {
     return findClass(typeName)
         ?: imports
@@ -36,6 +41,6 @@ fun toInternalType(cls: Class<*>): String {
     return Type.getInternalName(cls)
 }
 
-fun toTypeDescriptor(fqcn: String): String {
-    return Type.getObjectType(toInternalType(fqcn)).descriptor
+fun toDescriptor(cls: Class<*>): String {
+    return Type.getDescriptor(cls)
 }

@@ -5,12 +5,12 @@ import org.antlr.v4.runtime.BufferedTokenStream
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.Token
 import org.objectweb.asm.*
+import resolveToDescriptor
 import resolveToInternalName
 import rip.deadcode.michishio.generated.MichishioLexer
 import rip.deadcode.michishio.generated.MichishioParser
 import rip.deadcode.michishio.generated.MichishioParser.*
 import toInternalType
-import toTypeDescriptor
 import java.io.InputStream
 
 
@@ -63,7 +63,7 @@ private fun compileFile(source: FileContext): ByteArray {
     writer.visit(versionInt, classAccFlag, className, null, superClass, interfaces)
 
     classDec.field_declaration().forEach {
-        compileField(writer, it)
+        compileField(writer, it, importNames)
     }
     classDec.method_declaration().forEach {
         compileMethod(writer, it)
@@ -105,8 +105,7 @@ private fun flagsToInt(keywords: List<String>): Int {
                 }
             }
         }
-        .reduce { acc, n -> acc or n }
-        .asInt
+        .reduce(0) { acc, n -> acc or n }
 }
 
 private fun readImportList(importContexts: List<Import_declarationContext>): List<Class<*>> {
@@ -131,11 +130,11 @@ private fun compileInheritance(classDec: Class_declarationContext, imports: List
     return extension to interfaces
 }
 
-private fun compileField(writer: ClassWriter, field: Field_declarationContext) {
+private fun compileField(writer: ClassWriter, field: Field_declarationContext, imports: List<String>) {
 
     val fieldAccFlag = compileFieldAccessFlag(field.field_access_flag())
     val fieldName = field.java_type_name().text
-    val descriptor = compileFieldAccessFlag(field.field_type())
+    val descriptor = compileFieldDescriptor(field.field_type(), imports)
 
     val value = field.constant_field_notation()?.STRING_LITERAL()?.text?.decodeStringLiteral()  // TODO
 
@@ -152,11 +151,11 @@ private fun compileFieldAccessFlag(nodes: List<Field_access_flagContext>): Int {
     return flagsToInt(nodes.map { it.text })
 }
 
-private fun compileFieldAccessFlag(fieldType: Field_typeContext): String {
+private fun compileFieldDescriptor(fieldType: Field_typeContext, imports: List<String>): String {
     return if (fieldType.STRING_LITERAL() != null) {
         fieldType.STRING_LITERAL().text.decodeStringLiteral()
     } else {
-        toTypeDescriptor(fieldType.java_type_name().text)
+        resolveToDescriptor(fieldType.java_type_name().text, imports)
     }
 }
 

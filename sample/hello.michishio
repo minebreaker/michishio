@@ -1,6 +1,7 @@
 major 52;
 minor 0;
 
+
 public final super class HelloClass {
 
     public static java.lang.String field = "hello, world!";

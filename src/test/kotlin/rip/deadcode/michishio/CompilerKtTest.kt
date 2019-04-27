@@ -108,6 +108,31 @@ internal class CompilerKtTest {
     }
 
     @Test
+    fun testFieldImport() {
+
+        val source = """
+            major 52;
+            minor 0;
+
+            import java.util.Date;
+
+            public final super class test.TestClass {
+                String field1;
+                Date field2;
+            }
+        """.trimIndent()
+
+        val cls = load(source, "test.TestClass")
+        assertThat(cls.declaredFields.size).isEqualTo(2)
+
+        val f1 = cls.getDeclaredField("field1")
+        assertThat(f1.type).isEqualTo(String::class.java)
+
+        val f2 = cls.getDeclaredField("field2")
+        assertThat(f2.type).isEqualTo(Date::class.java)
+    }
+
+    @Test
     fun testError() {
         expect {
             val source = "unexpected token"
