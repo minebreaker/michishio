@@ -5,12 +5,14 @@ import org.antlr.v4.runtime.BufferedTokenStream
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.Token
 import org.objectweb.asm.*
+import resolve
 import resolveToDescriptor
 import resolveToInternalName
 import rip.deadcode.michishio.generated.MichishioLexer
 import rip.deadcode.michishio.generated.MichishioParser
 import rip.deadcode.michishio.generated.MichishioParser.*
 import toInternalType
+import toMethodDescriptor
 import java.io.InputStream
 
 
@@ -66,7 +68,7 @@ private fun compileFile(source: FileContext): ByteArray {
         compileField(writer, it, importNames)
     }
     classDec.method_declaration().forEach {
-        compileMethod(writer, it)
+        compileMethod(writer, it, importNames)
     }
 
     writer.visitEnd()
@@ -74,6 +76,7 @@ private fun compileFile(source: FileContext): ByteArray {
 }
 
 private fun compileClassAccessFlag(nodes: List<Class_access_flagContext>): Int {
+    // TODO check if valid flag
     return flagsToInt(nodes.map { it.text })
 }
 
@@ -148,6 +151,7 @@ private fun compileField(writer: ClassWriter, field: Field_declarationContext, i
 }
 
 private fun compileFieldAccessFlag(nodes: List<Field_access_flagContext>): Int {
+    // TODO check if valid flag
     return flagsToInt(nodes.map { it.text })
 }
 
@@ -185,12 +189,13 @@ private fun compileFieldAttribute(writer: ClassWriter, fv: FieldVisitor, attribu
     }
 }
 
-private fun compileMethod(writer: ClassWriter, method: Method_declarationContext) {
+private fun compileMethod(writer: ClassWriter, method: Method_declarationContext, imports: List<String>) {
 
     val methodAccFlag = compileMethodAccessFlag(method.method_access_flag())
     val methodName = method.java_type_name().text
 
-    val (descriptor, signature) = compileMethodDescriptor(method.method_return_type(), method.method_arguments())
+    val (descriptor, signature) =
+        compileMethodDescriptor(method.method_return_type(), method.method_arguments(), imports)
     val mv = writer.visitMethod(methodAccFlag, methodName, descriptor, signature, arrayOf())
 
     if (method.attribute_notation() != null) {
@@ -206,12 +211,20 @@ private fun compileMethodAccessFlag(nodes: List<Method_access_flagContext>): Int
 
 private fun compileMethodDescriptor(
     returnType: Method_return_typeContext,
-    argumentTypes: Method_argumentsContext?
+    argumentTypes: Method_argumentsContext?,
+    imports: List<String>
 ): Pair<String, String?> {
 
     val inlineDescriptor = returnType.STRING_LITERAL()
     if (inlineDescriptor == null) {
-        TODO()
+        // TODO void
+
+        val returnTypeClass = resolve(returnType.java_type_name().text, imports)
+        val argumentClasses = argumentTypes?.method_argument()
+            ?.map { resolve(it.java_type_name().text, imports) }
+            ?: listOf()
+
+        return toMethodDescriptor(returnTypeClass, argumentClasses) to null
 
     } else {
         if (argumentTypes != null) {

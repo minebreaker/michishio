@@ -16,7 +16,7 @@ object Toolbox {
         set(CommandLineParser::class, DefaultParser())
         set(ResourceBundle::class, ResourceBundle.getBundle("message"))
         set(FileSystem::class, FileSystems.getDefault())
-        set(ClassLoader::class, Toolbox.javaClass.classLoader)
+        set(ClassLoader::class, Toolbox::class.java.classLoader)
     }
 
     operator fun <T : Any> get(cls: KClass<T>): T {

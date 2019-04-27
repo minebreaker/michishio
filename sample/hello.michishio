@@ -4,7 +4,7 @@ minor 0;
 
 public final super class HelloClass {
 
-    public static java.lang.String field = "hello, world!";
+    public static String field = "hello, world!";
 
     public static "([Ljava/lang/String;)V" main() {
         Code {

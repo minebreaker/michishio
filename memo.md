@@ -6,8 +6,6 @@ Programming language for writing Java byte code
 TODO
 
 * non string constant
-* use asm `Type` utility for descriptors
-* import resolution
 * signature syntax
 * constants
 * attributes

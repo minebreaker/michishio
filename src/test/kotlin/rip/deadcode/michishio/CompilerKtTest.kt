@@ -132,6 +132,38 @@ internal class CompilerKtTest {
         assertThat(f2.type).isEqualTo(Date::class.java)
     }
 
+
+    @Test
+    fun testMethod() {
+
+        val source = """
+            major 52;
+            minor 0;
+
+            import java.util.Date;
+
+            public final super class test.TestClass {
+                public abstract "(Ljava/lang/String;)V" m1();
+                public abstract Date m2(java.lang.String, Date);
+            }
+        """.trimIndent()
+
+        val cls = load(source, "test.TestClass")
+        assertThat(cls.declaredMethods.size).isEqualTo(2)
+
+        val m1 = cls.getDeclaredMethod("m1", String::class.java)
+        assertThat(m1.returnType).isEqualTo(Void.TYPE)
+        assertThat(m1.parameterTypes).asList().containsExactly(String::class.java)
+        assertThat(Modifier.isPublic(m1.modifiers)).isTrue()
+        assertThat(Modifier.isAbstract(m1.modifiers)).isTrue()
+
+        val m2 = cls.getDeclaredMethod("m2", String::class.java, Date::class.java)
+        assertThat(m2.returnType).isEqualTo(Date::class.java)
+        assertThat(m2.parameterTypes).asList().containsExactly(String::class.java, Date::class.java)
+        assertThat(Modifier.isPublic(m2.modifiers)).isTrue()
+        assertThat(Modifier.isAbstract(m2.modifiers)).isTrue()
+    }
+
     @Test
     fun testError() {
         expect {
