@@ -8,7 +8,7 @@ grammar Michishio;
     package rip.deadcode.michishio.generated;
 }
 
-// keywords
+// java keywords
 PUBLIC : 'public' ;
 FINAL : 'final' ;
 SUPER : 'super' ;
@@ -170,6 +170,7 @@ method_access_flag
 method_return_type
     : STRING_LITERAL
     | java_type_name
+    | 'void'
     ;
 
 method_arguments

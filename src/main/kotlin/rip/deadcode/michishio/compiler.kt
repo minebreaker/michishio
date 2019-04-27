@@ -217,9 +217,12 @@ private fun compileMethodDescriptor(
 
     val inlineDescriptor = returnType.STRING_LITERAL()
     if (inlineDescriptor == null) {
-        // TODO void
 
-        val returnTypeClass = resolve(returnType.java_type_name().text, imports)
+        val returnTypeClass = if (returnType.java_type_name() == null) {
+            Void.TYPE
+        } else {
+            resolve(returnType.java_type_name().text, imports)
+        }
         val argumentClasses = argumentTypes?.method_argument()
             ?.map { resolve(it.java_type_name().text, imports) }
             ?: listOf()

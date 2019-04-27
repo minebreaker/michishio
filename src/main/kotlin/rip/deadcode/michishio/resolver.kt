@@ -14,6 +14,7 @@ fun resolveToDescriptor(typeName: String, imports: List<String>): String {
 }
 
 fun resolve(typeName: String, imports: List<String>): Class<*> {
+    // TODO array
     return findClass(typeName)
         ?: imports
             .filter { it.endsWith(".${typeName}") }

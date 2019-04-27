@@ -143,25 +143,32 @@ internal class CompilerKtTest {
             import java.util.Date;
 
             public final super class test.TestClass {
-                public abstract "(Ljava/lang/String;)V" m1();
-                public abstract Date m2(java.lang.String, Date);
+                public abstract "([Ljava/lang/String;)V" m1();
+                public abstract void m2();
+                public abstract Date m3(java.lang.String, Date);
             }
         """.trimIndent()
 
         val cls = load(source, "test.TestClass")
-        assertThat(cls.declaredMethods.size).isEqualTo(2)
+        assertThat(cls.declaredMethods.size).isEqualTo(3)
 
-        val m1 = cls.getDeclaredMethod("m1", String::class.java)
+        val m1 = cls.getDeclaredMethod("m1", Array<String>::class.java)
         assertThat(m1.returnType).isEqualTo(Void.TYPE)
-        assertThat(m1.parameterTypes).asList().containsExactly(String::class.java)
+        assertThat(m1.parameterTypes).asList().containsExactly(Array<String>::class.java)
         assertThat(Modifier.isPublic(m1.modifiers)).isTrue()
         assertThat(Modifier.isAbstract(m1.modifiers)).isTrue()
 
-        val m2 = cls.getDeclaredMethod("m2", String::class.java, Date::class.java)
-        assertThat(m2.returnType).isEqualTo(Date::class.java)
-        assertThat(m2.parameterTypes).asList().containsExactly(String::class.java, Date::class.java)
+        val m2 = cls.getDeclaredMethod("m2")
+        assertThat(m2.returnType).isEqualTo(Void.TYPE)
+        assertThat(m2.parameterTypes).asList().isEmpty()
         assertThat(Modifier.isPublic(m2.modifiers)).isTrue()
         assertThat(Modifier.isAbstract(m2.modifiers)).isTrue()
+
+        val m3 = cls.getDeclaredMethod("m3", String::class.java, Date::class.java)
+        assertThat(m3.returnType).isEqualTo(Date::class.java)
+        assertThat(m3.parameterTypes).asList().containsExactly(String::class.java, Date::class.java)
+        assertThat(Modifier.isPublic(m3.modifiers)).isTrue()
+        assertThat(Modifier.isAbstract(m3.modifiers)).isTrue()
     }
 
     @Test
