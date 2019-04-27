@@ -34,6 +34,24 @@ internal class CompilerKtTest {
     }
 
     @Test
+    fun testImportResolutionFailure() {
+        expect {
+            val source = """
+            major 52;
+            minor 0;
+
+            public final super class test.TestClass
+                implements List {}
+        """.trimIndent()
+            compile(ByteArrayInputStream(source.toByteArray()))
+
+        }.throwsException {
+            assertThat(it).isInstanceOf(MichishioException::class.java)
+            assertThat(it).hasMessageThat().isEqualTo("Could not resolve the name 'List'")
+        }
+    }
+
+    @Test
     fun testClass() {
 
         val source = """
@@ -172,13 +190,16 @@ internal class CompilerKtTest {
     }
 
     @Test
-    fun testError() {
+    fun testParseError() {
         expect {
             val source = "unexpected token"
             compile(ByteArrayInputStream(source.toByteArray()))
 
         }.throwsException {
             assertThat(it).isInstanceOf(MichishioException::class.java)
+            assertThat(it).hasMessageThat().isEqualTo(
+                "Syntax error: Unexpected token 'unexpected' at 1:0 (mismatched input 'unexpected' expecting 'major')"
+            )
         }
     }
 
