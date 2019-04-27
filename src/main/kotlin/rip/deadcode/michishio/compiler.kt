@@ -30,9 +30,10 @@ fun compile(input: InputStream): ByteArray {
     if (errorAccumulator.errors.isNotEmpty()) {
         val e = errorAccumulator.errors[0]  // FIXME
         throw MichishioException(
-            getMessage("rip.deadcode.michishio.2").format(
-                (e.offendingSymbol as Token).text, "${e.line}:${e.charPositionInLine}", e.msg
-            )
+            "rip.deadcode.michishio.2",
+            (e.offendingSymbol as Token).text,
+            "${e.line}:${e.charPositionInLine}",
+            e.msg
         )
     }
 

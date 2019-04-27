@@ -25,3 +25,7 @@ fun String.decodeStringLiteral(): String {
 fun getMessage(key: String): String {
     return Toolbox[ResourceBundle::class].getString(key)
 }
+
+fun getMessage(key: String, vararg args: Any): String {
+    return Toolbox[ResourceBundle::class].getString(key).format(*args)
+}

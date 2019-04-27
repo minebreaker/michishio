@@ -1,4 +1,4 @@
 package rip.deadcode.michishio
 
 
-class MichishioException(errorMessage: String) : RuntimeException(errorMessage)
+class MichishioException(messageKey: String, vararg args: Any) : RuntimeException(getMessage(messageKey, *args))
