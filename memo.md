@@ -1,15 +1,11 @@
-# Michishio
-
-Programming language for writing Java byte code
-
-
-TODO
+## TODO
 
 * non string constant
-* signature syntax
+* primitive and array class types
+* signature syntax (generics)
 * constants
 * attributes
-    * code
+    * code syntax
 * exception syntax
 * try-catch syntax
 * fluent error message
@@ -17,19 +13,4 @@ TODO
 * module
 * introduce ast
     * python like syntax
-
-```
-major 52;
-minor 0;
-
-public final super class HelloClass {
-    public static "([Ljava/lang/String;)V" main() {
-        Code {
-            getstatic "java/lang/System" "out" "Ljava/io/PrintStream;";
-            ldc "hello, world"
-            invokevirtual "java/io/PrintStream" "println" "(Ljava/lang/String;)V";
-            return;
-        }
-    }
-}
-```
+* documentation
