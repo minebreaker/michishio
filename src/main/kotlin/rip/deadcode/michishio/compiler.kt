@@ -26,7 +26,7 @@ fun compile(input: InputStream): ByteArray {
     val source = parser.file()
 
     if (errorAccumulator.errors.isNotEmpty()) {
-        val e = errorAccumulator.errors[0]
+        val e = errorAccumulator.errors[0]  // FIXME
         throw MichishioException(
             getMessage("rip.deadcode.michishio.2").format(
                 (e.offendingSymbol as Token).text, "${e.line}:${e.charPositionInLine}", e.msg
@@ -37,7 +37,7 @@ fun compile(input: InputStream): ByteArray {
     return compileFile(source)
 }
 
-private fun compileFile(source: MichishioParser.FileContext): ByteArray {
+private fun compileFile(source: FileContext): ByteArray {
 
     val writer = ClassWriter(ClassWriter.COMPUTE_MAXS or ClassWriter.COMPUTE_FRAMES)
 
