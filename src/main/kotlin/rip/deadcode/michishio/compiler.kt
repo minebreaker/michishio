@@ -7,6 +7,8 @@ import org.objectweb.asm.*
 import rip.deadcode.michishio.generated.MichishioLexer
 import rip.deadcode.michishio.generated.MichishioParser
 import rip.deadcode.michishio.generated.MichishioParser.*
+import toInternalType
+import toTypeDescriptor
 import java.io.InputStream
 
 
@@ -48,7 +50,7 @@ private fun compileFile(source: FileContext): ByteArray {
 
     val classDec = source.class_declaration()
     val classAccFlag = compileClassAccessFlag(classDec.class_access_flag())
-    val className = classDec.java_type_name().text.replace('.', '/')
+    val className = toInternalType(classDec.java_type_name().text)
 
     val (superClass, interfaces) = compileInheritance(classDec)
 
@@ -103,9 +105,13 @@ private fun flagsToInt(keywords: List<String>): Int {
 
 private fun compileInheritance(classDec: Class_declarationContext): Pair<String, Array<String>> {
     val inheritance = classDec.inheritance()
-    val extension = inheritance.java_type_name()?.text?.replace('.', '/') ?: "java/lang/Object"
+    val extension = if (inheritance.java_type_name() != null) {
+        toInternalType(inheritance.java_type_name().text)
+    } else {
+        "java/lang/Object"
+    }
     val interfaces = inheritance.interfaces()?.java_type_name()
-        ?.map { it.text.replace('.', '/') }
+        ?.map { toInternalType(it.text) }
         ?.toTypedArray() ?: arrayOf()
     return extension to interfaces
 }
@@ -135,7 +141,7 @@ private fun compileFieldAccessFlag(fieldType: Field_typeContext): String {
     return if (fieldType.STRING_LITERAL() != null) {
         fieldType.STRING_LITERAL().text.decodeStringLiteral()
     } else {
-        "L" + fieldType.java_type_name().text.replace('.', '/') + ";"  // TODO
+        toTypeDescriptor(fieldType.java_type_name().text)
     }
 }
 
