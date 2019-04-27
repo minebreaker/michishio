@@ -11,6 +11,29 @@ import java.util.*
 internal class CompilerKtTest {
 
     @Test
+    fun testImports() {
+
+        val source = """
+            major 52;
+            minor 0;
+
+            import java.util.Date;
+            import java.util.List;
+
+            public final super class test.TestClass
+                extends Date
+                implements List, Runnable, java.lang.CharSequence {}
+        """.trimIndent()
+
+        val classfile = compile(ByteArrayInputStream(source.toByteArray()))
+        val cls = ByteClassLoader("test.TestClass", classfile).loadClass("")
+
+        assertThat(cls.superclass).isEqualTo(Date::class.java)
+        assertThat(cls.interfaces.asList())
+            .containsExactly(List::class.java, Runnable::class.java, CharSequence::class.java)
+    }
+
+    @Test
     fun testClass() {
 
         val source = """

@@ -1,9 +1,11 @@
 package rip.deadcode.michishio
 
+import findClass
 import org.antlr.v4.runtime.BufferedTokenStream
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.Token
 import org.objectweb.asm.*
+import resolveToInternalName
 import rip.deadcode.michishio.generated.MichishioLexer
 import rip.deadcode.michishio.generated.MichishioParser
 import rip.deadcode.michishio.generated.MichishioParser.*
@@ -49,11 +51,14 @@ private fun compileFile(source: FileContext): ByteArray {
     val versionMinor = version.NATURAL(1).text.toInt()
     val versionInt = (versionMinor shl 16) or versionMajor
 
+    val imports = readImportList(source.import_declaration())
+    val importNames = imports.map { it.canonicalName }
+
     val classDec = source.class_declaration()
     val classAccFlag = compileClassAccessFlag(classDec.class_access_flag())
     val className = toInternalType(classDec.java_type_name().text)
 
-    val (superClass, interfaces) = compileInheritance(classDec)
+    val (superClass, interfaces) = compileInheritance(classDec, importNames)
 
     writer.visit(versionInt, classAccFlag, className, null, superClass, interfaces)
 
@@ -104,15 +109,24 @@ private fun flagsToInt(keywords: List<String>): Int {
         .asInt
 }
 
-private fun compileInheritance(classDec: Class_declarationContext): Pair<String, Array<String>> {
+private fun readImportList(importContexts: List<Import_declarationContext>): List<Class<*>> {
+    return importContexts
+        .map {
+            val target = it.java_type_name().text
+            findClass(target) ?: throw MichishioException("rip.deadcode.michishio.3", target)
+        }
+}
+
+private fun compileInheritance(classDec: Class_declarationContext, imports: List<String>): Pair<String, Array<String>> {
+
     val inheritance = classDec.inheritance()
     val extension = if (inheritance.java_type_name() != null) {
-        toInternalType(inheritance.java_type_name().text)
+        resolveToInternalName(inheritance.java_type_name().text, imports)
     } else {
         "java/lang/Object"
     }
     val interfaces = inheritance.interfaces()?.java_type_name()
-        ?.map { toInternalType(it.text) }
+        ?.map { resolveToInternalName(it.text, imports) }
         ?.toTypedArray() ?: arrayOf()
     return extension to interfaces
 }
