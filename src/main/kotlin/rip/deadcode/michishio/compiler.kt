@@ -256,9 +256,6 @@ private fun compileMethodAttribute(writer: ClassWriter, mv: MethodVisitor, attri
                             op.argument(2).STRING_LITERAL().text.decodeStringLiteral()
                         )
                     }
-                    "ldc" -> {
-                        mv.visitLdcInsn(op.argument(0).STRING_LITERAL().text.decodeStringLiteral())
-                    }
                     "invokevirtual" -> {
                         mv.visitMethodInsn(
                             Opcodes.INVOKEVIRTUAL,
@@ -268,9 +265,53 @@ private fun compileMethodAttribute(writer: ClassWriter, mv: MethodVisitor, attri
                             false
                         )
                     }
+
+                    // Constants
+                    "ldc" -> {
+                        mv.visitLdcInsn(op.argument(0).STRING_LITERAL().text.decodeStringLiteral())
+                    }
+                    "iconst_m1" -> {
+                        mv.visitInsn(Opcodes.ICONST_M1)
+                    }
+                    "iconst_0" -> {
+                        mv.visitInsn(Opcodes.ICONST_0)
+                    }
+                    "iconst_1" -> {
+                        mv.visitInsn(Opcodes.ICONST_1)
+                    }
+                    "iconst_2" -> {
+                        mv.visitInsn(Opcodes.ICONST_2)
+                    }
+                    "iconst_3" -> {
+                        mv.visitInsn(Opcodes.ICONST_3)
+                    }
+                    "iconst_4" -> {
+                        mv.visitInsn(Opcodes.ICONST_4)
+                    }
+                    "iconst_5" -> {
+                        mv.visitInsn(Opcodes.ICONST_5)
+                    }
+
+                    // Return
+                    "areturn" -> {
+                        mv.visitInsn(Opcodes.ARETURN)
+                    }
+                    "dreturn" -> {
+                        mv.visitInsn(Opcodes.DRETURN)
+                    }
+                    "freturn" -> {
+                        mv.visitInsn(Opcodes.FRETURN)
+                    }
+                    "ireturn" -> {
+                        mv.visitInsn(Opcodes.IRETURN)
+                    }
+                    "lreturn" -> {
+                        mv.visitInsn(Opcodes.LRETURN)
+                    }
                     "return" -> {
                         mv.visitInsn(Opcodes.RETURN)
                     }
+
                     else -> {
                         throw IllegalStateException("Unknown instruction: " + op.instruction().text)
                     }

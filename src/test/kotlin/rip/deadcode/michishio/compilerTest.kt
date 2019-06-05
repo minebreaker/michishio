@@ -150,7 +150,6 @@ internal class CompilerKtTest {
         assertThat(f2.type).isEqualTo(Date::class.java)
     }
 
-
     @Test
     fun testMethod() {
 
@@ -202,15 +201,15 @@ internal class CompilerKtTest {
             )
         }
     }
+}
 
-    private fun load(code: String, name: String): Class<*> {
-        val classfile = compile(ByteArrayInputStream(code.toByteArray()))
-        return ByteClassLoader(name, classfile).loadClass("")
-    }
+fun load(code: String, name: String): Class<*> {
+    val classfile = compile(ByteArrayInputStream(code.toByteArray()))
+    return ByteClassLoader(name, classfile).loadClass("")
+}
 
-    class ByteClassLoader(private val className: String, private val classfile: ByteArray) : ClassLoader() {
-        override fun findClass(name: String?): Class<*> {
-            return defineClass(this.className, classfile, 0, classfile.size)
-        }
+class ByteClassLoader(private val className: String, private val classfile: ByteArray) : ClassLoader() {
+    override fun findClass(name: String?): Class<*> {
+        return defineClass(this.className, classfile, 0, classfile.size)
     }
 }
