@@ -98,6 +98,18 @@ class CompilerCodeKtTest {
                         ireturn;
                     }
                 }
+                public static "()J" mLconst0() {
+                    Code {
+                        lconst_0;
+                        lreturn;
+                    }
+                }
+                public static "()J" mLconst1() {
+                    Code {
+                        lconst_1;
+                        lreturn;
+                    }
+                }
             }
         """.trimIndent()
 
@@ -144,5 +156,11 @@ class CompilerCodeKtTest {
 
         val mIconst5 = cls.getDeclaredMethod("mIconst5")
         assertThat(mIconst5(null)).isEqualTo(5)
+
+        val mLconst0 = cls.getDeclaredMethod("mLconst0")
+        assertThat(mLconst0(null)).isEqualTo(0L)
+
+        val mLconst1 = cls.getDeclaredMethod("mLconst1")
+        assertThat(mLconst1(null)).isEqualTo(1L)
     }
 }

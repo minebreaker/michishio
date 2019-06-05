@@ -309,6 +309,12 @@ private fun compileMethodAttribute(writer: ClassWriter, mv: MethodVisitor, attri
                     "iconst_5" -> {
                         mv.visitInsn(Opcodes.ICONST_5)
                     }
+                    "lconst_0" -> {
+                        mv.visitInsn(Opcodes.LCONST_0)
+                    }
+                    "lconst_1" -> {
+                        mv.visitInsn(Opcodes.LCONST_1)
+                    }
 
                     // Return
                     "areturn" -> {
