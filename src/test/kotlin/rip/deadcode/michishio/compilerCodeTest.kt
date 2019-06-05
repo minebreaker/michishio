@@ -26,6 +26,18 @@ class CompilerCodeKtTest {
                         areturn;
                     }
                 }
+                public static "()D" mDconst0() {
+                    Code {
+                        dconst_0;
+                        dreturn;
+                    }
+                }
+                public static "()D" mDconst1() {
+                    Code {
+                        dconst_1;
+                        dreturn;
+                    }
+                }
                 public static "()I" mIconstM1() {
                     Code {
                         iconst_m1;
@@ -78,6 +90,12 @@ class CompilerCodeKtTest {
 
         val mAconstNull = cls.getDeclaredMethod("mAconstNull")
         assertThat(mAconstNull(null)).isNull()
+
+        val mDconst0 = cls.getDeclaredMethod("mDconst0")
+        assertThat(mDconst0(null)).isEqualTo(0.0)
+
+        val mDconst1 = cls.getDeclaredMethod("mDconst1")
+        assertThat(mDconst1(null)).isEqualTo(1.0)
 
         val mIconstM1 = cls.getDeclaredMethod("mIconstM1")
         assertThat(mIconstM1(null)).isEqualTo(-1)
