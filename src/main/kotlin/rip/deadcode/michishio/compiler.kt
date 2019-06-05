@@ -279,6 +279,15 @@ private fun compileMethodAttribute(writer: ClassWriter, mv: MethodVisitor, attri
                     "dconst_1" -> {
                         mv.visitInsn(Opcodes.DCONST_1)
                     }
+                    "fconst_0" -> {
+                        mv.visitInsn(Opcodes.FCONST_0)
+                    }
+                    "fconst_1" -> {
+                        mv.visitInsn(Opcodes.FCONST_1)
+                    }
+                    "fconst_2" -> {
+                        mv.visitInsn(Opcodes.FCONST_2)
+                    }
                     "iconst_m1" -> {
                         mv.visitInsn(Opcodes.ICONST_M1)
                     }

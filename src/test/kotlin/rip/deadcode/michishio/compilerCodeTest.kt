@@ -38,6 +38,24 @@ class CompilerCodeKtTest {
                         dreturn;
                     }
                 }
+                public static "()F" mFconst0() {
+                    Code {
+                        fconst_0;
+                        freturn;
+                    }
+                }
+                public static "()F" mFconst1() {
+                    Code {
+                        fconst_1;
+                        freturn;
+                    }
+                }
+                public static "()F" mFconst2() {
+                    Code {
+                        fconst_2;
+                        freturn;
+                    }
+                }
                 public static "()I" mIconstM1() {
                     Code {
                         iconst_m1;
@@ -96,6 +114,15 @@ class CompilerCodeKtTest {
 
         val mDconst1 = cls.getDeclaredMethod("mDconst1")
         assertThat(mDconst1(null)).isEqualTo(1.0)
+
+        val mFconst0 = cls.getDeclaredMethod("mFconst0")
+        assertThat(mFconst0(null)).isEqualTo(0.0F)
+
+        val mFconst1 = cls.getDeclaredMethod("mFconst1")
+        assertThat(mFconst1(null)).isEqualTo(1.0F)
+
+        val mFconst2 = cls.getDeclaredMethod("mFconst2")
+        assertThat(mFconst2(null)).isEqualTo(2.0F)
 
         val mIconstM1 = cls.getDeclaredMethod("mIconstM1")
         assertThat(mIconstM1(null)).isEqualTo(-1)
