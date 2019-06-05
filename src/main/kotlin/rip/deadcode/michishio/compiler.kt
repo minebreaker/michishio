@@ -270,6 +270,9 @@ private fun compileMethodAttribute(writer: ClassWriter, mv: MethodVisitor, attri
                     "ldc" -> {
                         mv.visitLdcInsn(op.argument(0).STRING_LITERAL().text.decodeStringLiteral())
                     }
+                    "aconst_null" -> {
+                        mv.visitInsn(Opcodes.ACONST_NULL)
+                    }
                     "iconst_m1" -> {
                         mv.visitInsn(Opcodes.ICONST_M1)
                     }

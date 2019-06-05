@@ -20,6 +20,12 @@ class CompilerCodeKtTest {
                         areturn;
                     }
                 }
+                public static "()Ljava/lang/Object;" mAconstNull() {
+                    Code {
+                        aconst_null;
+                        areturn;
+                    }
+                }
                 public static "()I" mIconstM1() {
                     Code {
                         iconst_m1;
@@ -69,6 +75,9 @@ class CompilerCodeKtTest {
 
         val mLdc = cls.getDeclaredMethod("mLdc")
         assertThat(mLdc(null)).isEqualTo("str")
+
+        val mAconstNull = cls.getDeclaredMethod("mAconstNull")
+        assertThat(mAconstNull(null)).isNull()
 
         val mIconstM1 = cls.getDeclaredMethod("mIconstM1")
         assertThat(mIconstM1(null)).isEqualTo(-1)
